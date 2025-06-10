@@ -1,9 +1,49 @@
-# Right Tech Centre - Frontend
+# Right Tech Centre - eLearning Platform
 
-This is the frontend for the **Right Tech Centre** eLearning platform, built with **React.js** and **Tailwind CSS**.
+![Right Tech Centre Banner](public/images/bg-image.png)
 
-## Setup
+**An advanced eLearning platform** featuring AI-powered courses, blockchain certifications, and immersive learning experiences.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/right-tech-centreinc.git
+## Key Features
+
+### AI & Advanced Tech
+- AI-generated course content
+- Blockchain-based certifications (Ethereum)
+- AR/VR learning modules
+- AI-powered career coaching
+
+### Learning Experience
+- Live classes with Zoom integration
+- Interactive coding challenges
+- Gamification (badges, leaderboards)
+- Virtual reality labs
+
+### Career Services
+- AI resume builder
+- Job/internship portal
+- Corporate training programs
+- Scholarship management
+
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js (React)
+- **Styling**: Tailwind CSS
+- **Hosting**: Vercel
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: PostgreSQL (Render)
+- **Hosting**: Render
+
+### Mobile
+- **Framework**: React Native
+- **Distribution**: Google Play & Apple App Store
+
+## Deployment
+
+### Backend Setup (Render)
+1. Create account at [render.com](https://render.com)
+2. Connect your GitHub repository
+3. Configure environment variables:
