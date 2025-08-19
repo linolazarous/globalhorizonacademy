@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Courses collection
+    match /courses/{courseId} {
+      allow read: if request.auth != null 
+                  && resource.data.published == true;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+      
+      // Allow authors to manage their own courses
+      allow write: if request.auth != null 
+                   && resource.data.authorId == request.auth.uid
+                   && request.time < request.resource.data.updatedAt;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null 
+                  && request.auth.uid == userId;
+      allow write: if request.auth != null 
+                   && request.auth.uid == userId
+                   && request.resource.data.role == resource.data.role; // Prevent role escalation
+      
+      // Admins can read all users
+      allow read: if request.auth != null 
+                  && request.auth.token.admin == true;
+    }
+    
+    // User subcollections
+    match /users/{userId}/enrolledCourses/{courseId} {
+      allow read: if request.auth != null 
+                  && request.auth.uid == userId;
+      allow write: if request.auth != null 
+                   && request.auth.uid == userId;
+    }
+    
+    match /users/{userId}/achievements/{achievementId} {
+      allow read: if request.auth != null 
+                  && request.auth.uid == userId;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+    
+    match /users/{userId}/certificates/{certificateId} {
+      allow read: if request.auth != null 
+                  && request.auth.uid == userId;
+      allow create: if request.auth != null 
+                    && request.auth.token.admin == true;
+      allow update, delete: if false; // Immutable once created
+    }
+    
+    // Certificates collection
+    match /certificates/{certificateId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null 
+                    && request.auth.token.admin == true;
+      allow update, delete: if false; // Immutable once created
+    }
+    
+    // Events collection (analytics)
+    match /events/{eventId} {
+      allow write: if request.auth != null;
+      allow read: if request.auth != null 
+                  && request.auth.token.admin == true;
+    }
+    
+    // Errors collection (logging)
+    match /errors/{errorId} {
+      allow write: if true; // Allow client-side error logging
+      allow read: if request.auth != null 
+                  && request.auth.token.admin == true;
+    }
+    
+    // Payments collection
+    match /payments/{paymentId} {
+      allow read: if request.auth != null 
+                  && (resource.data.userId == request.auth.uid 
+                      || request.auth.token.admin == true);
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+    
+    // Discussions collection
+    match /courses/{courseId}/discussions/{discussionId} {
+      allow read: if request.auth != null 
+                  && resource.data.courseId == courseId;
+      allow write: if request.auth != null 
+                   && request.auth.uid == resource.data.authorId
+                   && request.time < request.resource.data.updatedAt;
+      
+      // Allow moderators to manage discussions
+      allow write: if request.auth != null 
+                   && request.auth.token.moderator == true;
+    }
+    
+    // System configuration (admin only)
+    match /config/{documentId} {
+      allow read: if request.auth != null 
+                  && request.auth.token.admin == true;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+    
+    // Leaderboard data
+    match /leaderboard/{timeframe}/scores/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+  }
+}
