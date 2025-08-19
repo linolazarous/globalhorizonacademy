@@ -1,0 +1,59 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Course materials - readable by authenticated users, writable by admins
+    match /courses/{courseId}/{fileName} {
+      allow read: if request.auth != null 
+                  && resource.metadata.visibility != 'private';
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true
+                   && request.resource.size < 50 * 1024 * 1024; // 50MB limit
+      
+      // Allow users to read their own uploads even if private
+      allow read: if request.auth != null 
+                  && resource.metadata.owner == request.auth.uid;
+    }
+    
+    // User uploads - private to each user
+    match /user-uploads/{userId}/{fileName} {
+      allow read, write: if request.auth != null 
+                         && request.auth.uid == userId
+                         && request.resource.size < 25 * 1024 * 1024; // 25MB limit
+    }
+    
+    // Certificates - readable by authenticated users, writable by admins
+    match /certificates/{certificateId}.pdf {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true
+                   && request.resource.size < 10 * 1024 * 1024; // 10MB limit
+      
+      // Allow certificate owners to read their certificates
+      allow read: if request.auth != null 
+                  && resource.metadata.owner == request.auth.uid;
+    }
+    
+    // Profile pictures - readable by anyone, writable by owner
+    match /profile-pictures/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null 
+                   && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024 // 5MB limit
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Public assets - readable by anyone
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+    
+    // Content delivery network - optimized files
+    match /cdn/{quality}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null 
+                   && request.auth.token.admin == true;
+    }
+  }
+}
