@@ -1,0 +1,23 @@
+/* src/styles/themes/high-contrast.css */
+[data-high-contrast="true"] {
+  --bg-primary: #000000;
+  --bg-secondary: #111111;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-primary: #ffff00;
+  --accent-secondary: #ffa500;
+  --border-color: #ffffff;
+}
+
+[data-high-contrast="true"] * {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-high-contrast="true"] a,
+[data-high-contrast="true"] button {
+  background-color: var(--accent-primary) !important;
+  color: #000000 !important;
+  border: 2px solid var(--border-color) !important;
+}
