@@ -35,4 +35,54 @@ module.exports = {
   validateCourseRequest,
   validatePaymentRequest,
   validateSubscriptionRequest
+
+};
+
+
+// src/utils/validation.js
+export const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
+export const validatePassword = (password) => {
+  return password.length >= 8;
+};
+
+export const validateCourseData = (data) => {
+  const errors = {};
+  
+  if (!data.title || data.title.length < 5) {
+    errors.title = 'Title must be at least 5 characters';
+  }
+  
+  if (!data.description || data.description.length < 20) {
+    errors.description = 'Description must be at least 20 characters';
+  }
+  
+  if (!data.price || data.price < 0) {
+    errors.price = 'Price must be a positive number';
+  }
+  
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
+export const rateLimit = async (identifier, maxRequests, timeWindow) => {
+  const key = `rate_limit_${identifier}`;
+  const now = Date.now();
+  const windowStart = now - timeWindow;
+  
+  const requests = JSON.parse(localStorage.getItem(key) || '[]')
+    .filter(timestamp => timestamp > windowStart);
+  
+  if (requests.length >= maxRequests) {
+    return true;
+  }
+  
+  requests.push(now);
+  localStorage.setItem(key, JSON.stringify(requests));
+  return false;
 };
