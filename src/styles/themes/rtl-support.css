@@ -1,0 +1,21 @@
+/* src/styles/themes/rtl-support.css */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .container {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+[dir="rtl"] .navbar-nav {
+  padding-right: 0;
+  padding-left: initial;
+}
+
+[dir="rtl"] .dropdown-menu {
+  right: auto;
+  left: 0;
+  text-align: right;
+}
