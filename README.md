@@ -1,6 +1,6 @@
 # Right Tech Centre - eLearning Platform
 
-![Right Tech Centre Banner](public/images/bg-image.png)
+![Right Tech Centre Banner](public/images/logo.webp)
 
 **An advanced eLearning platform** featuring AI-powered courses, blockchain certifications, and immersive learning experiences.
 
