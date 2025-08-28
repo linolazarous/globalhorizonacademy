@@ -1,4 +1,5 @@
 ![Global Horizon Academy - eLearning Platform](public/images/logo.webp)
+## Global Horizon Academy - eLearning Platform ##
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-18%2B-brightgreen.svg)](https://nodejs.org)
