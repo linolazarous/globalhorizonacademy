@@ -1,23 +1,30 @@
 [build]
-  # All settings blank = use defaults
   publish = "."
+  command = "echo 'Building static site with environment variables'"
+
+[build.environment]
+  NODE_VERSION = "18"
 
 [functions]
   directory = "functions"
+  node_bundler = "esbuild"
 
-# Keep your headers, redirects, and environment variables
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
+# Environment variables for production
 [context.production.environment]
-  STRIPE_SECRET_KEY = "@stripe_secret_key"
+  FIREBASE_API_KEY = "@firebase_api_key"
+  FIREBASE_AUTH_DOMAIN = "@firebase_auth_domain"
+  FIREBASE_PROJECT_ID = "@firebase_project_id"
+  FIREBASE_STORAGE_BUCKET = "@firebase_storage_bucket"
+  FIREBASE_MESSAGING_SENDER_ID = "@firebase_messaging_sender_id"
+  FIREBASE_APP_ID = "@firebase_app_id"
+  STRIPE_PUBLISHABLE_KEY = "@stripe_publishable_key"
   OPENAI_API_KEY = "@openai_api_key"
+
+# For preview deployments
+[context.deploy-preview.environment]
+  NODE_ENV = "staging"
+  STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "staging"
+  STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
