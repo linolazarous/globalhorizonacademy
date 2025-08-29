@@ -1,38 +1,67 @@
 // netlify/functions/your-function.js
-import { validateAuth, validateCourseRequest, ValidationError, AuthenticationError } from '../../src/utils/validators';
-
 exports.handler = async (event, context) => {
   try {
-    // Validate authentication
-    const user = await validateAuth(event);
+    // Check for authentication
+    const authHeader = event.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ error: 'Missing or invalid authorization token' })
+      };
+    }
+    
+    // Parse request body
+    let data;
+    try {
+      data = JSON.parse(event.body);
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid JSON in request body' })
+      };
+    }
     
     // Validate request data
-    const validatedData = validateCourseRequest(JSON.parse(event.body));
+    if (!data || typeof data !== 'object') {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid request data' })
+      };
+    }
     
-    // Process the request...
+    if (!data.title || data.title.trim().length < 3) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ 
+          error: 'Validation failed',
+          details: { title: 'Course title must be at least 3 characters' }
+        })
+      };
+    }
+    
+    // Process the request (add your logic here)
+    const processedData = {
+      ...data,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString()
+    };
     
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, data: validatedData })
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        success: true, 
+        data: processedData 
+      })
     };
     
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ error: error.message })
-      };
-    } else if (error instanceof ValidationError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: error.message, details: error.details })
-      };
-    } else {
-      console.error('Server error:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Internal server error' })
-      };
-    }
+    console.error('Function error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' })
+    };
   }
 };
