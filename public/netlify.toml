@@ -1,11 +1,11 @@
 [build]
-  publish = "."  # Netlify will serve files from the root directory
-  command = "echo 'No build needed for static site'"
+  publish = "."  # Serve from root directory
+  command = "echo 'Static site - no build needed'"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# Your existing headers configuration remains the same
+# Your existing headers and redirects can stay the same
 [[headers]]
   for = "/api/*"
   [headers.values]
@@ -21,13 +21,11 @@
   [headers.values]
     Access-Control-Allow-Origin = "*"
 
-# Redirects for SPA behavior (optional)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Security headers
 [[headers]]
   for = "/*"
   [headers.values]
@@ -37,16 +35,21 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
-# Cache optimization
+# Cache headers
 [[headers]]
-  for = "/static/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/sw.js"
+  for = "/*.js"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
 
 [[headers]]
   for = "/*.jpg"
@@ -63,33 +66,44 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
 
-# Remove functions section since you're not using Netlify Functions
-# [functions]
-#   node_bundler = "esbuild"
-#   external_node_modules = [
-#     "firebase", 
-#     "@stripe/stripe-js", 
-#     "openai", 
-#     "jsonwebtoken", 
-#     "crypto", 
-#     "axios"
-#   ]
-#   included_files = [
-#     "netlify/functions/**/*.js",
-#     "netlify/functions/**/*.json"
-#   ]
-#   timeout = 30
+# Netlify Functions configuration (keep if you're using them)
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = [
+    "firebase", 
+    "@stripe/stripe-js", 
+    "openai", 
+    "jsonwebtoken", 
+    "crypto", 
+    "axios"
+  ]
+  included_files = [
+    "functions/**/*.js",
+    "functions/**/*.json"
+  ]
 
-# Environment variables (if needed for any client-side JS)
+# Function-specific timeouts
+[functions."generate-course"]
+  timeout = 60
+
+[functions."create-payment-intent"]
+  timeout = 30
+
+[functions."stripe-webhook"]
+  timeout = 10
+
+# Environment variables
 [context.production.environment]
-  # These will be available in your JavaScript via process.env
-  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_publishable_key"
-  REACT_APP_OPENAI_API_KEY = "@openai_api_key"
+  STRIPE_SECRET_KEY = "@stripe_secret_key"
+  OPENAI_API_KEY = "@openai_api_key"
+  JWT_SECRET = "@jwt_secret"
+  FIREBASE_CONFIG = "@firebase_config"
+  SENTRY_DSN = "@sentry_dsn"
 
 [context.deploy-preview.environment]
   NODE_ENV = "staging"
-  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
+  STRIPE_SECRET_KEY = "@stripe_test_secret_key"
 
 [context.branch-deploy.environment]
   NODE_ENV = "staging"
-  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
+  STRIPE_SECRET_KEY = "@stripe_test_secret_key"
