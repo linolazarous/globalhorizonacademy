@@ -1,5 +1,5 @@
 [build]
-  publish = "."  # Serve from root directory
+  publish = "public"  # Serve from root directory
   command = "echo 'Static site - no build needed'"
 
 [build.environment]
@@ -107,3 +107,4 @@
 [context.branch-deploy.environment]
   NODE_ENV = "staging"
   STRIPE_SECRET_KEY = "@stripe_test_secret_key"
+
