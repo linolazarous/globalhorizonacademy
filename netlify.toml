@@ -1,109 +1,23 @@
 [build]
-  publish = "."  # Serve from root directory
-  command = "echo 'Static site - no build needed'"
+  # All settings blank = use defaults
+  publish = "."
 
-[build.environment]
-  NODE_VERSION = "18"
+[functions]
+  directory = "functions"
 
-# Your existing headers and redirects can stay the same
+# Keep your headers, redirects, and environment variables
 [[headers]]
   for = "/api/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-
-[[headers]]
-  for = "/.well-known/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-
-# Cache headers
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.jpg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.png"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.webp"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-# Netlify Functions configuration (keep if you're using them)
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = [
-    "firebase", 
-    "@stripe/stripe-js", 
-    "openai", 
-    "jsonwebtoken", 
-    "crypto", 
-    "axios"
-  ]
-  included_files = [
-    "functions/**/*.js",
-    "functions/**/*.json"
-  ]
-
-# Function-specific timeouts
-[functions."generate-course"]
-  timeout = 60
-
-[functions."create-payment-intent"]
-  timeout = 30
-
-[functions."stripe-webhook"]
-  timeout = 10
-
-# Environment variables
 [context.production.environment]
   STRIPE_SECRET_KEY = "@stripe_secret_key"
   OPENAI_API_KEY = "@openai_api_key"
-  JWT_SECRET = "@jwt_secret"
-  FIREBASE_CONFIG = "@firebase_config"
-  SENTRY_DSN = "@sentry_dsn"
-
-[context.deploy-preview.environment]
-  NODE_ENV = "staging"
-  STRIPE_SECRET_KEY = "@stripe_test_secret_key"
-
-[context.branch-deploy.environment]
-  NODE_ENV = "staging"
-  STRIPE_SECRET_KEY = "@stripe_test_secret_key"
