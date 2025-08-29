@@ -1,11 +1,12 @@
-"dependencies": {
-  "winston": "^3.8.2",
-  "joi": "^17.7.0",
-  "ethers": "^5.7.2",
-  "ipfs-http-client": "^56.0.3",
-  "canvas": "^2.11.0",
-  "rate-limiter-flexible": "^2.4.1",
-  "redis": "^4.6.5",
-  "pptxgenjs": "^3.10.0",
-  "pdfkit": "^0.13.0"
+{
+  "name": "globalhorizonacademy",
+  "version": "1.0.0",
+  "description": "Global Horizon Academy - Static Website",
+  "scripts": {
+    "build": "echo 'Building static site'",
+    "dev": "echo 'Start development server'"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
 }
