@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "echo 'Building static site with environment variables'"
+  command = ""  # No build command needed for static site
 
 [build.environment]
   NODE_VERSION = "18"
@@ -9,6 +9,20 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   external_node_modules = ["jsonwebtoken", "validator"]
+  included_files = [
+    "netlify/functions/**/*.js",
+    "netlify/functions/**/*.json"
+  ]
+
+# Function-specific timeouts
+[functions."generate-course"]
+  timeout = 60
+
+[functions."create-payment-intent"]
+  timeout = 30
+
+[functions."stripe-webhook"]
+  timeout = 10
 
 # Environment variables for production
 [context.production.environment]
@@ -29,3 +43,16 @@
 [context.branch-deploy.environment]
   NODE_ENV = "staging"
   STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
+
+# Your existing headers and redirects would go here too
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
