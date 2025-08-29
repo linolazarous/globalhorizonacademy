@@ -6,8 +6,9 @@
   NODE_VERSION = "18"
 
 [functions]
-  directory = "functions"
+  directory = "netlify/functions"
   node_bundler = "esbuild"
+  external_node_modules = ["jsonwebtoken", "validator"]
 
 # Environment variables for production
 [context.production.environment]
