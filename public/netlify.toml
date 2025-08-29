@@ -1,6 +1,95 @@
 [build]
-  functions = "netlify/functions"
+  publish = "."  # Netlify will serve files from the root directory
+  command = "echo 'No build needed for static site'"
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["firebase", "@stripe/stripe-js"]
+[build.environment]
+  NODE_VERSION = "18"
+
+# Your existing headers configuration remains the same
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/.well-known/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+# Redirects for SPA behavior (optional)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache optimization
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# Remove functions section since you're not using Netlify Functions
+# [functions]
+#   node_bundler = "esbuild"
+#   external_node_modules = [
+#     "firebase", 
+#     "@stripe/stripe-js", 
+#     "openai", 
+#     "jsonwebtoken", 
+#     "crypto", 
+#     "axios"
+#   ]
+#   included_files = [
+#     "netlify/functions/**/*.js",
+#     "netlify/functions/**/*.json"
+#   ]
+#   timeout = 30
+
+# Environment variables (if needed for any client-side JS)
+[context.production.environment]
+  # These will be available in your JavaScript via process.env
+  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_publishable_key"
+  REACT_APP_OPENAI_API_KEY = "@openai_api_key"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "staging"
+  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "staging"
+  REACT_APP_STRIPE_PUBLISHABLE_KEY = "@stripe_test_publishable_key"
