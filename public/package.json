@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Global Horizon Academy - Static Website",
   "scripts": {
-    "build": "echo 'Building static site'",
-    "dev": "echo 'Start development server'"
+    "build": "echo 'No build process needed for static site'",
+    "dev": "echo 'Run a local server if needed'"
   },
-  "devDependencies": {
-    "serve": "^14.0.0"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }
